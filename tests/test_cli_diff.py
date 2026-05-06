@@ -67,6 +67,24 @@ class TestCmdDiff:
             cmd_diff(args)
         assert exc_info.value.code == 1
 
+    def test_exits_on_missing_old_file_only(self, tmp_path):
+        """Ensure exit code 1 is raised when only the old file is missing."""
+        new = tmp_path / "new.env"
+        new.write_text("FOO=bar")
+        args = _ns(old=str(tmp_path / "ghost.env"), new=str(new))
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_diff(args)
+        assert exc_info.value.code == 1
+
+    def test_exits_on_missing_new_file_only(self, tmp_path):
+        """Ensure exit code 1 is raised when only the new file is missing."""
+        old = tmp_path / "old.env"
+        old.write_text("FOO=bar")
+        args = _ns(old=str(old), new=str(tmp_path / "ghost.env"))
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_diff(args)
+        assert exc_info.value.code == 1
+
 
 def test_register_diff_subcommands():
     parser = argparse.ArgumentParser()
