@@ -77,3 +77,24 @@ def pull(remote_dir: str, filename: str, local_dir: Path) -> Path:
 def remote_exists(remote_dir: str, filename: str) -> bool:
     """Check whether an encrypted file exists in the remote directory."""
     return (Path(remote_dir) / filename).is_file()
+
+
+def list_remote(remote_dir: str, suffix: str = ".enc") -> list[str]:
+    """List encrypted files available in a remote directory.
+
+    Args:
+        remote_dir: Directory to scan for encrypted files.
+        suffix: File extension to filter by (default: '.enc').
+
+    Returns:
+        A sorted list of matching filenames.
+
+    Raises:
+        SyncError: If the remote directory cannot be read.
+    """
+    remote_path = Path(remote_dir)
+    try:
+        entries = [p.name for p in remote_path.iterdir() if p.is_file() and p.suffix == suffix]
+    except OSError as exc:
+        raise SyncError(f"Cannot list remote directory '{remote_dir}': {exc}") from exc
+    return sorted(entries)
