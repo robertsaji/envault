@@ -28,6 +28,9 @@ def encrypt_file(input_path: str, recipients: list[str], output_path: Optional[s
     if not recipients:
         raise GPGError("At least one recipient is required for encryption.")
 
+    if not os.path.exists(input_path):
+        raise GPGError(f"Input file not found: {input_path}")
+
     if output_path is None:
         output_path = input_path + ".gpg"
 
@@ -56,6 +59,9 @@ def decrypt_file(input_path: str, output_path: Optional[str] = None) -> str:
     Raises:
         GPGError: If decryption fails.
     """
+    if not os.path.exists(input_path):
+        raise GPGError(f"Input file not found: {input_path}")
+
     if output_path is None:
         output_path = input_path.removesuffix(".gpg")
         if output_path == input_path:
